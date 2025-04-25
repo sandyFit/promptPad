@@ -1,17 +1,44 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "./dashboard/DahboardLayout";
+import Login from "./auth/Login";
+import ProtectedRoute from "./dashboard/ProtectedRoute";
+import { AuthProvider } from './context/AuthContext';
+import { RoleProvider } from './context/RoleContext';
+import Register from "./auth/Register";
+import Users from "./dashboard/Users";
+import Profile from "./dashboard/Profile";
+import Prompts from "./dashboard/Prompts";
+import Settings from "./dashboard/Settings";
+import Favorites from "./dashboard/Favorites";
+import Tags from "./dashboard/Tags";
 
 const App = () => {
     return (
-        <Routes>
-            <Route path="/" element={<DashboardLayout />}>
-                <Route index element={<DashboardLayout />} />
-                <Route path="users" element={<DashboardLayout />} />
-                <Route path="profile" element={<DashboardLayout />} />
-                <Route path="settings" element={<DashboardLayout />} />
-            </Route>
-        </Routes>
+        <AuthProvider>
+            <RoleProvider>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+
+                    <Route
+                        path="/*"
+                        element={
+                            // <ProtectedRoute>
+                            <DashboardLayout />
+                            //</ProtectedRoute>
+                        }
+                    >
+                        <Route path="users" element={<Users />} />
+                        <Route path="prompts" element={<Prompts />} />
+                        <Route path="profile" element={<Profile />} />
+                        <Route path="settings" element={<Settings />} />
+                        <Route path="favirites" element={<Favorites />} />
+                        <Route path="tags" element={<Tags />} />
+                    </Route>
+                </Routes>
+            </RoleProvider>
+        </AuthProvider>
     );
 };
 

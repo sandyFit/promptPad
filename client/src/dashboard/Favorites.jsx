@@ -7,7 +7,7 @@ const Favorites = () => {
     const favoritePrompts = [];
 
     return (
-        <div>
+        <section>
             <div className="flex justify-between mb-6">
                 <SearchBar />
             </div>
@@ -31,7 +31,7 @@ const Favorites = () => {
                     ))}
                 </div>
             )}
-        </div>
+        </section>
     );
 };
 

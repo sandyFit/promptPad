@@ -1,30 +1,59 @@
-import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useRole } from '../context/RoleContext';
 
 const Navbar = () => {
-    const [activeView, setActiveView] = useState('prompts');
-    const [userRole, setUserRole] = useState('contributor');
+    const location = useLocation();
+    const { userRole, setUserRole } = useRole();
+
+    // Get active view from URL
+    const getActiveView = () => {
+        const path = location.pathname.split('/')[1];
+        return path || 'prompts';
+    };
+
+    const getViewTitle = (view) => {
+        const titles = {
+            prompts: 'Prompt Library',
+            users: 'User Management',
+            profile: 'Your Profile',
+            settings: 'Settings',
+            favorites: 'Favorite Prompts',
+            tags: 'Manage Tags'
+        };
+        return titles[view] || 'Prompt Library';
+    };
+
+    // Role badge colors
+    const roleBadgeColors = {
+        viewer: 'bg-gray-100 text-gray-700',
+        contributor: 'bg-purple-100 text-purple-700',
+        moderator: 'bg-blue-100 text-blue-700',
+        admin: 'bg-red-100 text-red-700'
+    };
+
+    const handleRoleChange = (e) => {
+        setUserRole(e.target.value);
+    };
 
     return (
         <header className="bg-white border-b border-gray-200 py-4 px-6 flex items-center justify-between">
             <div className="flex items-center">
                 <h2 className="text-2xl font-semibold text-gray-800">
-                    {activeView === 'prompts' && 'Prompt Library'}
-                    {activeView === 'users' && 'User Management'}
-                    {activeView === 'profile' && 'Your Profile'}
-                    {activeView === 'settings' && 'Settings'}
+                    {getViewTitle(getActiveView())}
                 </h2>
             </div>
 
-            <div className="flex items-center space-x-2">
-                <div className="bg-purple-100 px-3 py-1 rounded-full text-sm text-purple-700">
+            <div className="flex items-center space-x-4">
+                <div className={`px-3 py-1 rounded-full text-sm ${roleBadgeColors[userRole]}`}>
                     Role: {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
                 </div>
 
-                {/* Role switcher (for demo purposes) */}
                 <select
                     value={userRole}
-                    onChange={(e) => setUserRole(e.target.value)}
-                    className="bg-gray-100 text-gray-700 px-3 py-1 rounded-md text-sm"
+                    onChange={handleRoleChange}
+                    className="border border-gray-300 text-gray-700 px-3 py-1 rounded-md text-sm 
+                             hover:border-purple-500 focus:outline-none focus:ring-2 
+                             focus:ring-purple-500 focus:border-transparent"
                 >
                     <option value="viewer">Viewer</option>
                     <option value="contributor">Contributor</option>
@@ -33,7 +62,7 @@ const Navbar = () => {
                 </select>
             </div>
         </header>
-    )
-}
+    );
+};
 
 export default Navbar;

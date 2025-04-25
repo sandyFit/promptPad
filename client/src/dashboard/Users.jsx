@@ -1,50 +1,66 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import RoleManagement from './RoleManagement';
+import { useAuth } from '../context/AuthContext';
 
 const Users = () => {
-    return (
-        <section className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-medium mb-4">User Management</h3>
-            <p>This panel is only visible to administrators.</p>
-            <div className="border rounded-md mt-4">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        <tr>
-                            <td className="px-6 py-4 whitespace-nowrap">alex@example.com</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Contributor</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <button className="text-purple-600 hover:text-purple-700">Edit</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className="px-6 py-4 whitespace-nowrap">sam@example.com</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Moderator</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <button className="text-purple-600 hover:text-purple-700">Edit</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className="px-6 py-4 whitespace-nowrap">taylor@example.com</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Viewer</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <button className="text-purple-600 hover:text-purple-700">Edit</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <button className="mt-4 flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
-                <Plus size={18} className="mr-2" />
-                Invite User
-            </button>
-        </section>
-    )
-}
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
 
-export default Users
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch('/api/users');
+                const data = await response.json();
+                setUsers(data);
+            } catch (error) {
+                console.error('Failed to fetch users:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    const handleRoleUpdate = (userId, updatedRoles) => {
+        setUsers(prevUsers =>
+            prevUsers.map(user =>
+                user.id === userId
+                    ? { ...user, roles: updatedRoles }
+                    : user
+            )
+        );
+    };
+
+    if (!user?.role === 'admin') {
+        return <div>Access denied</div>;
+    }
+
+    return (
+        <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
+            <div className="bg-white shadow overflow-hidden sm:rounded-md">
+                <ul className="divide-y divide-gray-200">
+                    {users.map(user => (
+                        <li key={user.id} className="p-4">
+                            <div className="space-y-4">
+                                <div>
+                                    <h3 className="text-lg font-medium">{user.email}</h3>
+                                    <p className="text-sm text-gray-500">User ID: {user.id}</p>
+                                </div>
+                                <RoleManagement
+                                    userId={user.id}
+                                    currentRoles={user.roles}
+                                    onUpdate={(roles) => handleRoleUpdate(user.id, roles)}
+                                />
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
+};
+
+export default Users;

@@ -1,19 +1,18 @@
-import { useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Sidebar from '../layouts/Sidebar';
 import Navbar from '../layouts/Navbar';
 import Prompts from './Prompts';
 import Users from './Users';
 import Profile from './Profile';
 import Settings from './Settings';
-import Favorites from './Favorites'; 
-import Tags from './Tags'; 
-
+import Favorites from './Favorites';
+import Tags from './Tags';
 
 const DashboardLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [userRole] = useState('contributor'); // This should come from auth context
+    const { user } = useAuth();
 
     const getActiveView = () => {
         const path = location.pathname.split('/')[1];
@@ -43,7 +42,7 @@ const DashboardLayout = () => {
             tags: ['moderator', 'admin']
         };
 
-        return accessRules[view]?.includes(userRole);
+        return accessRules[view]?.includes(user.role);
     };
 
     const ActiveComponent = componentMap[activeView];
@@ -59,7 +58,7 @@ const DashboardLayout = () => {
             <div className="flex-1 overflow-hidden flex flex-col">
                 <Navbar />
                 <main className="flex-1 overflow-y-auto p-6">
-                    <Outlet />
+                    <ActiveComponent />
                 </main>
             </div>
         </section>
