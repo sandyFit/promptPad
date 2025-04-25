@@ -15,7 +15,7 @@ const Sidebar = () => {
     const canManageUsers = ['admin'].includes(userRole);
 
     return (
-        <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-white border-b border-gray-200 
+        <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-white border-r border-gray-200 
             text-gray-800 transition-all duration-300 flex flex-col`}>
             <div className="p-4 flex items-center justify-between">
                 {sidebarOpen ? (
