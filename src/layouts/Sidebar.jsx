@@ -19,7 +19,7 @@ const Sidebar = () => {
                 ) : (
                     <h1 className="text-xl font-bold">🎨</h1>
                 )}
-                <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white">
+                <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-600">
                     <Menu size={20} />
                 </button>
             </div>
@@ -52,7 +52,7 @@ const Sidebar = () => {
             </nav>
 
             <div className="p-4">
-                <div className="flex items-center py-2 cursor-pointer hover:bg-purple-500 rounded px-2">
+                <div className="flex items-center py-2 cursor-pointer hover:bg-purple-100 rounded px-2">
                     <LogOut size={20} />
                     {sidebarOpen && <span className="ml-3">Logout</span>}
                 </div>
