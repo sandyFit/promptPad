@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, Search, User, LogOut, Settings, Users } from 'lucide-react';
-
 
 const Sidebar = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [userRole, setUserRole] = useState('contributor');
-    const [activeView, setActiveView] = useState('prompts');
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [userRole] = useState('contributor');
+
+    // Get active view from current path
+    const activeView = location.pathname.split('/')[1] || 'prompts';
 
     // UI changes based on user role
     const canManageUsers = ['admin'].includes(userRole);
@@ -26,25 +30,29 @@ const Sidebar = () => {
 
             <nav className="flex-1 mt-8">
                 <ul>
-                    <li onClick={() => setActiveView('prompts')} className={`flex items-center py-3 px-4 
-                            cursor-pointer ${activeView === 'prompts' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
+                    <li onClick={() => navigate('/')}
+                        className={`flex items-center py-3 px-4 cursor-pointer 
+                        ${activeView === 'prompts' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
                         <Search size={20} />
                         {sidebarOpen && <span className="ml-3">Prompts</span>}
                     </li>
                     {canManageUsers && (
-                        <li onClick={() => setActiveView('users')} className={`flex items-center py-3 px-4 
-                            cursor-pointer ${activeView === 'users' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
+                        <li onClick={() => navigate('/users')}
+                            className={`flex items-center py-3 px-4 cursor-pointer 
+                            ${activeView === 'users' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
                             <Users size={20} />
                             {sidebarOpen && <span className="ml-3">Users</span>}
                         </li>
                     )}
-                    <li onClick={() => setActiveView('profile')} className={`flex items-center py-3 px-4 
-                            cursor-pointer ${activeView === 'profile' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
+                    <li onClick={() => navigate('/profile')}
+                        className={`flex items-center py-3 px-4 cursor-pointer 
+                        ${activeView === 'profile' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
                         <User size={20} />
                         {sidebarOpen && <span className="ml-3">Profile</span>}
                     </li>
-                    <li onClick={() => setActiveView('settings')} className={`flex items-center py-3 px-4 
-                            cursor-pointer ${activeView === 'settings' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
+                    <li onClick={() => navigate('/settings')}
+                        className={`flex items-center py-3 px-4 cursor-pointer 
+                        ${activeView === 'settings' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
                         <Settings size={20} />
                         {sidebarOpen && <span className="ml-3">Settings</span>}
                     </li>
@@ -58,7 +66,7 @@ const Sidebar = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Sidebar;
