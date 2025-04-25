@@ -1,18 +1,47 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Menu, Search, User, LogOut, Settings, Users } from 'lucide-react';
+import { Menu, Search, User, LogOut, Settings, Users, Tag, Star } from 'lucide-react';
 
 const Sidebar = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
-    const [userRole] = useState('contributor');
+    const [userRole] = useState('contributor'); // This should come from auth context
 
     // Get active view from current path
     const activeView = location.pathname.split('/')[1] || 'prompts';
 
-    // UI changes based on user role
-    const canManageUsers = ['admin'].includes(userRole);
+    // Role-based navigation items
+    const navigationItems = {
+        viewer: [
+            { path: '/', icon: Search, label: 'Prompts' },
+            { path: '/favorites', icon: Star, label: 'Favorites' },
+            { path: '/profile', icon: User, label: 'Profile' },
+            { path: '/settings', icon: Settings, label: 'Settings' }
+        ],
+        contributor: [
+            { path: '/', icon: Search, label: 'Prompts' },
+            { path: '/favorites', icon: Star, label: 'Favorites' },
+            { path: '/profile', icon: User, label: 'Profile' },
+            { path: '/settings', icon: Settings, label: 'Settings' }
+        ],
+        moderator: [
+            { path: '/', icon: Search, label: 'Prompts' },
+            { path: '/favorites', icon: Star, label: 'Favorites' },
+            { path: '/tags', icon: Tag, label: 'Manage Tags' },
+            { path: '/profile', icon: User, label: 'Profile' },
+            { path: '/settings', icon: Settings, label: 'Settings' }
+        ],
+        admin: [
+            { path: '/', icon: Search, label: 'Prompts' },
+            { path: '/users', icon: Users, label: 'Users' },
+            { path: '/tags', icon: Tag, label: 'Manage Tags' },
+            { path: '/profile', icon: User, label: 'Profile' },
+            { path: '/settings', icon: Settings, label: 'Settings' }
+        ]
+    };
+
+    const currentNavItems = navigationItems[userRole] || navigationItems.viewer;
 
     return (
         <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-white border-r border-gray-200 
@@ -30,32 +59,17 @@ const Sidebar = () => {
 
             <nav className="flex-1 mt-8">
                 <ul>
-                    <li onClick={() => navigate('/')}
-                        className={`flex items-center py-3 px-4 cursor-pointer 
-                        ${activeView === 'prompts' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
-                        <Search size={20} />
-                        {sidebarOpen && <span className="ml-3">Prompts</span>}
-                    </li>
-                    {canManageUsers && (
-                        <li onClick={() => navigate('/users')}
+                    {currentNavItems.map((item) => (
+                        <li
+                            key={item.path}
+                            onClick={() => navigate(item.path)}
                             className={`flex items-center py-3 px-4 cursor-pointer 
-                            ${activeView === 'users' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
-                            <Users size={20} />
-                            {sidebarOpen && <span className="ml-3">Users</span>}
+                            ${activeView === item.path.slice(1) ? 'bg-purple-100' : 'hover:bg-purple-50'}`}
+                        >
+                            <item.icon size={20} />
+                            {sidebarOpen && <span className="ml-3">{item.label}</span>}
                         </li>
-                    )}
-                    <li onClick={() => navigate('/profile')}
-                        className={`flex items-center py-3 px-4 cursor-pointer 
-                        ${activeView === 'profile' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
-                        <User size={20} />
-                        {sidebarOpen && <span className="ml-3">Profile</span>}
-                    </li>
-                    <li onClick={() => navigate('/settings')}
-                        className={`flex items-center py-3 px-4 cursor-pointer 
-                        ${activeView === 'settings' ? 'bg-purple-100' : 'hover:bg-purple-50'}`}>
-                        <Settings size={20} />
-                        {sidebarOpen && <span className="ml-3">Settings</span>}
-                    </li>
+                    ))}
                 </ul>
             </nav>
 
