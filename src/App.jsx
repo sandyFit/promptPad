@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Menu, Search, Plus, Edit, Trash2, User, LogOut, Settings, Users, Tag } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Tag } from 'lucide-react';
+import Sidebar from './layouts/Sidebar';
+import PromptCard from './components/cards/PromptCard';
 
 // Mock data
 const mockPrompts = [
@@ -8,63 +10,21 @@ const mockPrompts = [
     { id: 3, title: "Code Refactoring Assistant", content: "Refactor this [language] code to improve [aspect] while maintaining the same functionality: ```[code]```", tags: ["coding", "development"], createdBy: "taylor@example.com" }
 ];
 
+
 const App = () => {
 
     const [activeView, setActiveView] = useState('prompts');
-    const [sidebarOpen, setSidebarOpen] = useState(true);
     const [userRole, setUserRole] = useState('contributor'); // Options: viewer, contributor, moderator, admin
 
-    // UI changes based on user role
+
     const canCreatePrompt = ['contributor', 'moderator', 'admin'].includes(userRole);
     const canEditPrompt = ['contributor', 'moderator', 'admin'].includes(userRole);
     const canDeletePrompt = ['moderator', 'admin'].includes(userRole);
-    const canManageUsers = ['admin'].includes(userRole);
   
     return (
         <div className="flex h-screen bg-gray-50">
             {/* Sidebar */}
-            <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-indigo-700 text-white transition-all duration-300 flex flex-col`}>
-                <div className="p-4 flex items-center justify-between">
-                    {sidebarOpen ? (
-                        <h1 className="text-xl font-bold">PromptPad</h1>
-                    ) : (
-                        <h1 className="text-xl font-bold">🎨</h1>
-                    )}
-                    <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white">
-                        <Menu size={20} />
-                    </button>
-                </div>
-
-                <nav className="flex-1 mt-8">
-                    <ul>
-                        <li onClick={() => setActiveView('prompts')} className={`flex items-center py-3 px-4 cursor-pointer ${activeView === 'prompts' ? 'bg-indigo-800' : 'hover:bg-indigo-600'}`}>
-                            <Search size={20} />
-                            {sidebarOpen && <span className="ml-3">Prompts</span>}
-                        </li>
-                        {canManageUsers && (
-                            <li onClick={() => setActiveView('users')} className={`flex items-center py-3 px-4 cursor-pointer ${activeView === 'users' ? 'bg-indigo-800' : 'hover:bg-indigo-600'}`}>
-                                <Users size={20} />
-                                {sidebarOpen && <span className="ml-3">Users</span>}
-                            </li>
-                        )}
-                        <li onClick={() => setActiveView('profile')} className={`flex items-center py-3 px-4 cursor-pointer ${activeView === 'profile' ? 'bg-indigo-800' : 'hover:bg-indigo-600'}`}>
-                            <User size={20} />
-                            {sidebarOpen && <span className="ml-3">Profile</span>}
-                        </li>
-                        <li onClick={() => setActiveView('settings')} className={`flex items-center py-3 px-4 cursor-pointer ${activeView === 'settings' ? 'bg-indigo-800' : 'hover:bg-indigo-600'}`}>
-                            <Settings size={20} />
-                            {sidebarOpen && <span className="ml-3">Settings</span>}
-                        </li>
-                    </ul>
-                </nav>
-
-                <div className="p-4">
-                    <div className="flex items-center py-2 cursor-pointer hover:bg-indigo-600 rounded px-2">
-                        <LogOut size={20} />
-                        {sidebarOpen && <span className="ml-3">Logout</span>}
-                    </div>
-                </div>
-            </div>
+            <Sidebar />
 
             {/* Main Content */}
             <div className="flex-1 overflow-hidden flex flex-col">
@@ -80,7 +40,7 @@ const App = () => {
                     </div>
 
                     <div className="flex items-center space-x-2">
-                        <div className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">
+                        <div className="bg-purple-100 px-3 py-1 rounded-full text-sm text-purple-700">
                             Role: {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
                         </div>
 
@@ -88,7 +48,7 @@ const App = () => {
                         <select
                             value={userRole}
                             onChange={(e) => setUserRole(e.target.value)}
-                            className="bg-gray-100 px-3 py-1 rounded-md text-sm"
+                            className="bg-purple-100 text-purple-700 px-3 py-1 rounded-md text-sm"
                         >
                             <option value="viewer">Viewer</option>
                             <option value="contributor">Contributor</option>
@@ -108,14 +68,14 @@ const App = () => {
                                     <input
                                         type="text"
                                         placeholder="Search prompts..."
-                                        className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     />
                                     <Search size={18} className="absolute left-3 top-2.5 text-gray-400" />
                                 </div>
 
                                 <div className="flex gap-3">
                                     {canCreatePrompt && (
-                                        <button className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                                        <button className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
                                             <Plus size={18} className="mr-2" />
                                             Create Prompt
                                         </button>
@@ -125,15 +85,15 @@ const App = () => {
 
                             {/* Tags filter */}
                             <div className="mb-6 flex gap-2">
-                                <div className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full flex items-center">
+                                <div className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full flex items-center">
                                     <Tag size={14} className="mr-1" />
                                     <span>creative</span>
                                 </div>
-                                <div className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full flex items-center">
+                                <div className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-full flex items-center">
                                     <Tag size={14} className="mr-1" />
                                     <span>marketing</span>
                                 </div>
-                                <div className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full flex items-center">
+                                <div className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full flex items-center">
                                     <Tag size={14} className="mr-1" />
                                     <span>coding</span>
                                 </div>
@@ -146,43 +106,11 @@ const App = () => {
                             {/* Prompts grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {mockPrompts.map(prompt => (
-                                    <div key={prompt.id} className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <h3 className="text-lg font-medium text-gray-800">{prompt.title}</h3>
-
-                                            {(canEditPrompt || canDeletePrompt) && (
-                                                <div className="flex gap-2">
-                                                    {canEditPrompt && (
-                                                        <button className="text-gray-500 hover:text-indigo-600">
-                                                            <Edit size={16} />
-                                                        </button>
-                                                    )}
-                                                    {canDeletePrompt && (
-                                                        <button className="text-gray-500 hover:text-red-600">
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                                            {prompt.content}
-                                        </p>
-
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex gap-2">
-                                                {prompt.tags.map(tag => (
-                                                    <span key={tag} className="bg-gray-100 text-xs px-2 py-1 rounded text-gray-600">
-                                                        {tag}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                            <div className="text-xs text-gray-500">
-                                                By {prompt.createdBy.split('@')[0]}
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <PromptCard
+                                        key={prompt.id}
+                                        prompt={prompt}
+                                        canEditPrompt={canEditPrompt}
+                                        canDeletePrompt={canDeletePrompt} />
                                 ))}
                             </div>
                         </div>
@@ -206,27 +134,27 @@ const App = () => {
                                             <td className="px-6 py-4 whitespace-nowrap">alex@example.com</td>
                                             <td className="px-6 py-4 whitespace-nowrap">Contributor</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                                                <button className="text-purple-600 hover:text-purple-700">Edit</button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className="px-6 py-4 whitespace-nowrap">sam@example.com</td>
                                             <td className="px-6 py-4 whitespace-nowrap">Moderator</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                                                <button className="text-purple-600 hover:text-purple-700">Edit</button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className="px-6 py-4 whitespace-nowrap">taylor@example.com</td>
                                             <td className="px-6 py-4 whitespace-nowrap">Viewer</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                                                <button className="text-purple-600 hover:text-purple-700">Edit</button>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <button className="mt-4 flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                            <button className="mt-4 flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
                                 <Plus size={18} className="mr-2" />
                                 Invite User
                             </button>
@@ -273,7 +201,7 @@ const App = () => {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Notification Preferences</label>
                                     <div className="flex items-center">
-                                        <input type="checkbox" id="notifications" className="h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+                                        <input type="checkbox" id="notifications" className="h-4 w-4 text-purple-600 border-gray-300 rounded" />
                                         <label htmlFor="notifications" className="ml-2 text-sm text-gray-700">Email notifications for new prompts</label>
                                     </div>
                                 </div>
