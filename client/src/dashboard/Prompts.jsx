@@ -47,9 +47,11 @@ const Prompts = () => {
             <div className="flex justify-between mb-6">
                 <SearchBar />
 
-                <div className="flex gap-3">
+                <div className="flex gap-3 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded">
                     {canCreatePrompt && (
-                        <BtnPrimary btnLegend="Create Prompt" />
+                        <BtnPrimary
+                            iconLeft={<Plus size={16} />}
+                            btnLegend="Create Prompt" />
                     )}
                 </div>
             </div>

@@ -56,7 +56,7 @@ const Sidebar = () => {
         <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-white border-r border-gray-200 
             text-gray-800 transition-all duration-300 flex flex-col`}>
             <div className="p-4 flex items-center justify-between">
-                {sidebarOpen && <h1 className="text-xl font-bold">PromptPad</h1>}
+                {sidebarOpen && <h1 className="text-xl font-bold">PromptStack</h1>}
                 <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
                     className="p-2 hover:bg-purple-50 rounded-md"

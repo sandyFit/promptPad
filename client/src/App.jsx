@@ -13,12 +13,14 @@ import Settings from "./dashboard/Settings";
 import Favorites from "./dashboard/Favorites";
 import Tags from "./dashboard/Tags";
 import CreatePrompt from "./dashboard/CreatePrompt";
+import Landing from "./pages/Landing";
 
 const App = () => {
     return (
         <AuthProvider>
             <RoleProvider>
                 <Routes>
+                    <Route path="/" element={<Landing />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
 

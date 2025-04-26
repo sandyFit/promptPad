@@ -3,7 +3,8 @@ import { Edit, Trash2 } from 'lucide-react';
 
 const PromptCard = ({ prompt, canEditPrompt, canDeletePrompt }) => {
     return (
-        <div key={prompt.id} className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+        <article key={prompt.id} className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 
+            hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start mb-3">
                 <h3 className="text-lg font-medium text-gray-800">{prompt.title}</h3>
 
@@ -39,7 +40,7 @@ const PromptCard = ({ prompt, canEditPrompt, canDeletePrompt }) => {
                     By {prompt.createdBy.split('@')[0]}
                 </div>
             </div>
-        </div>
+        </article>
     )
 }
 
