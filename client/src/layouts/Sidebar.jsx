@@ -20,33 +20,33 @@ const Sidebar = () => {
     // Role-based navigation items with descriptions
     const navigationItems = {
         viewer: [
-            { path: '/', icon: Search, label: 'Browse Prompts', description: 'Find and explore prompts' },
-            { path: '/favorites', icon: Star, label: 'Favorites', description: 'Your saved prompts' },
-            { path: '/profile', icon: User, label: 'Profile', description: 'Your profile settings' },
-            { path: '/settings', icon: Settings, label: 'Settings', description: 'App preferences' }
+            { path: '/dashboard', icon: Search, label: 'Browse Prompts', description: 'Find and explore prompts' },
+            { path: '/dashboard/favorites', icon: Star, label: 'Favorites', description: 'Your saved prompts' },
+            { path: '/dashboard/profile', icon: User, label: 'Profile', description: 'Your profile settings' },
+            { path: '/dashboard/settings', icon: Settings, label: 'Settings', description: 'App preferences' }
         ],
         contributor: [
-            { path: '/', icon: Search, label: 'Browse Prompts', description: 'Find and explore prompts' },
-            { path: '/create', icon: PenTool, label: 'Create Prompt', description: 'Write new prompts' },
-            { path: '/favorites', icon: Star, label: 'Favorites', description: 'Your saved prompts' },
-            { path: '/profile', icon: User, label: 'Profile', description: 'Your profile settings' },
-            { path: '/settings', icon: Settings, label: 'Settings', description: 'App preferences' }
+            { path: '/dashboard', icon: Search, label: 'Browse Prompts', description: 'Find and explore prompts' },
+            { path: '/dashboard/create', icon: PenTool, label: 'Create Prompt', description: 'Write new prompts' },
+            { path: '/dashboard/favorites', icon: Star, label: 'Favorites', description: 'Your saved prompts' },
+            { path: '/dashboard/profile', icon: User, label: 'Profile', description: 'Your profile settings' },
+            { path: '/dashboard/settings', icon: Settings, label: 'Settings', description: 'App preferences' }
         ],
         moderator: [
-            { path: '/', icon: Search, label: 'Browse Prompts', description: 'Find and explore prompts' },
-            { path: '/create', icon: PenTool, label: 'Create Prompt', description: 'Write new prompts' },
-            { path: '/favorites', icon: Star, label: 'Favorites', description: 'Your saved prompts' },
-            { path: '/tags', icon: Tag, label: 'Manage Tags', description: 'Organize prompt categories' },
-            { path: '/profile', icon: User, label: 'Profile', description: 'Your profile settings' },
-            { path: '/settings', icon: Settings, label: 'Settings', description: 'App preferences' }
+            { path: '/dashboard', icon: Search, label: 'Browse Prompts', description: 'Find and explore prompts' },
+            { path: '/dashboard/create', icon: PenTool, label: 'Create Prompt', description: 'Write new prompts' },
+            { path: '/dashboard/favorites', icon: Star, label: 'Favorites', description: 'Your saved prompts' },
+            { path: '/dashboard/tags', icon: Tag, label: 'Manage Tags', description: 'Organize prompt categories' },
+            { path: '/dashboard/profile', icon: User, label: 'Profile', description: 'Your profile settings' },
+            { path: '/dashboard/settings', icon: Settings, label: 'Settings', description: 'App preferences' }
         ],
         admin: [
-            { path: '/', icon: Search, label: 'Browse Prompts', description: 'Find and explore prompts' },
-            { path: '/create', icon: PenTool, label: 'Create Prompt', description: 'Write new prompts' },
-            { path: '/users', icon: Users, label: 'Users', description: 'Manage user accounts' },
-            { path: '/tags', icon: Tag, label: 'Manage Tags', description: 'Organize prompt categories' },
-            { path: '/profile', icon: User, label: 'Profile', description: 'Your profile settings' },
-            { path: '/settings', icon: Settings, label: 'Settings', description: 'App preferences' }
+            { path: '/dashboard', icon: Search, label: 'Browse Prompts', description: 'Find and explore prompts' },
+            { path: '/dashboard/create', icon: PenTool, label: 'Create Prompt', description: 'Write new prompts' },
+            { path: '/dashboard/users', icon: Users, label: 'Users', description: 'Manage user accounts' },
+            { path: '/dashboard/tags', icon: Tag, label: 'Manage Tags', description: 'Organize prompt categories' },
+            { path: '/dashboard/profile', icon: User, label: 'Profile', description: 'Your profile settings' },
+            { path: '/dashboard/settings', icon: Settings, label: 'Settings', description: 'App preferences' }
         ]
     };
 

@@ -1,4 +1,5 @@
-import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import Sidebar from '../layouts/Sidebar';
 import Navbar from '../layouts/Navbar';
@@ -6,14 +7,14 @@ import Prompts from './Prompts';
 import Users from './Users';
 import Profile from './Profile';
 import Settings from './Settings';
-import Favorites from './Favorites'; 
-import Tags from './Tags'; 
+import Favorites from './Favorites';
+import Tags from './Tags';
 
 
 const DashboardLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [userRole] = useState('contributor'); // This should come from auth context
+    const [userRole] = useState('viewer'); 
 
     const getActiveView = () => {
         const path = location.pathname.split('/')[1];
@@ -46,12 +47,6 @@ const DashboardLayout = () => {
         return accessRules[view]?.includes(userRole);
     };
 
-    const ActiveComponent = componentMap[activeView];
-
-    if (!ActiveComponent || !canAccess(activeView)) {
-        navigate('/');
-        return null;
-    }
 
     return (
         <section className="flex h-screen bg-gray-50">

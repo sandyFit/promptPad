@@ -1,7 +1,7 @@
 import React from 'react'
 
 const Settings = () => {
-    const [userRole, setUserRole] = useState('contributor');
+    // const [userRole, setUserRole] = useState('contributor');
     
     return (
         <section className="bg-white rounded-lg shadow-sm p-6">

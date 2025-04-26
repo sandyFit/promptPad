@@ -12,6 +12,7 @@ import Prompts from "./dashboard/Prompts";
 import Settings from "./dashboard/Settings";
 import Favorites from "./dashboard/Favorites";
 import Tags from "./dashboard/Tags";
+import CreatePrompt from "./dashboard/CreatePrompt";
 
 const App = () => {
     return (
@@ -21,19 +22,14 @@ const App = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
 
-                    <Route
-                        path="/*"
-                        element={
-                            // <ProtectedRoute>
-                            <DashboardLayout />
-                            //</ProtectedRoute>
-                        }
-                    >
+                    <Route path="/dashboard" element={<DashboardLayout />}>
+                        <Route index element={<Prompts />} />
                         <Route path="users" element={<Users />} />
                         <Route path="prompts" element={<Prompts />} />
+                        <Route path="create" element={<CreatePrompt />} />
                         <Route path="profile" element={<Profile />} />
                         <Route path="settings" element={<Settings />} />
-                        <Route path="favirites" element={<Favorites />} />
+                        <Route path="favorites" element={<Favorites />} />
                         <Route path="tags" element={<Tags />} />
                     </Route>
                 </Routes>
