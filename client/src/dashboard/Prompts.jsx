@@ -4,7 +4,7 @@ import PromptCard from '../components/cards/PromptCard';
 import BtnPrimary from '../components/buttons/BtnPrimary';
 import TagComponent from '../components/ui/TagComponent';
 import SearchBar from '../components/ui/SearchBar';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Star } from 'lucide-react';
 import mockPrompts from '../data/prompts';
 import { useRole } from '../context/RoleContext';
 
@@ -14,12 +14,21 @@ const Prompts = () => {
     const [showTagModal, setShowTagModal] = useState(false);
     const [newTag, setNewTag] = useState('');
     const [selectedTags, setSelectedTags] = useState([]);
+    const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+    // TODO: fetch this data from the backend
+    const [promptsData, setPromptsData] = useState(mockPrompts.map(prompt => ({
+        ...prompt,
+        isFavorite: false
+    })));
 
     const canCreatePrompt = ['contributor', 'moderator', 'admin'].includes(userRole);
     const canEditPrompt = ['contributor', 'moderator', 'admin'].includes(userRole);
     const canDeletePrompt = ['moderator', 'admin'].includes(userRole);
     const canSuggestTag = ['contributor', 'moderator', 'admin'].includes(userRole);
     const canAddTagDirectly = ['moderator', 'admin'].includes(userRole);
+    // All roles including viewers can favorite prompts
+    const canFavoritePrompt = true;
 
     const bgColors = [
         'bg-red-100',
@@ -88,25 +97,62 @@ const Prompts = () => {
         }
     };
 
+    const toggleFavoritesFilter = () => {
+        setShowFavoritesOnly(!showFavoritesOnly);
+    };
+
+    // Filter prompts based on selected tags and favorites filter
+    const filteredPrompts = promptsData.filter(prompt => {
+        // Filter by favorites if the option is enabled
+        if (showFavoritesOnly && !prompt.isFavorite) {
+            return false;
+        }
+
+        // If no tags are selected, show all prompts
+        if (selectedTags.length === 0) {
+            return true;
+        }
+
+        // Filter by selected tags
+        const promptTagIds = prompt.tags.map(tagName => {
+            const tag = tags.find(t => t.name === tagName);
+            return tag ? tag.id : null;
+        }).filter(id => id !== null);
+
+        return selectedTags.some(tagId => promptTagIds.includes(tagId));
+    });
+
     return (
         <div>
             {/* Search and actions bar */}
             <div className="flex justify-between mb-6">
                 <SearchBar />
 
-                <div className="flex gap-3 border-2 border-purple-600 rounded text-purple-600">
-                    {canCreatePrompt && (
+                <div className="flex gap-3">
+                    <div className="border-2 border-purple-600 rounded text-purple-600 ">
                         <BtnPrimary
-                            iconLeft={<Plus size={16} />}
-                            btnLegend="Create Prompt" />
+                            onClick={toggleFavoritesFilter}
+                            iconLeft={<Star size={16} />}
+                            btnLegend="favorites" />
+                    </div>
+
+                    {canCreatePrompt && (
+                        <div onClick={() => navigate('/dashboard/create-prompt')}
+                            className="bg-purple-200 rounded text-purple-600 hover:bg-purple-100">
+                            <BtnPrimary
+                                iconLeft={<Plus size={16} />}
+                                btnLegend="Create Prompt" />
+                        </div>
+                        
                     )}
                 </div>
             </div>
+            <hr className='border border-gray-200'/>
 
             {/* Tags filter */}
-            <div className="mb-6">
+            <div className="my-6">
                 <div className="flex items-center mb-2">
-                    <h3 className="text-sm font-medium text-gray-700 mr-2">Filter by tags:</h3>
+                    <h3 className="text-sm font-medium text-gray-700 mr-2 my-2">Filter by tags:</h3>
                     {(canAddTagDirectly || canSuggestTag) && (
                         <button
                             onClick={() => setShowTagModal(true)}
@@ -144,13 +190,20 @@ const Prompts = () => {
 
             {/* Prompts grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {mockPrompts.map(prompt => (
-                    <PromptCard
-                        key={prompt.id}
-                        prompt={prompt}
-                        canEditPrompt={canEditPrompt}
-                        canDeletePrompt={canDeletePrompt} />
-                ))}
+                {filteredPrompts.length > 0 ? (
+                    filteredPrompts.map(prompt => (
+                        <PromptCard
+                            key={prompt.id}
+                            prompt={prompt}
+                            canEditPrompt={canEditPrompt}
+                            canDeletePrompt={canDeletePrompt}
+                        />
+                    ))
+                ) : (
+                    <div className="col-span-3 py-8 text-center text-gray-500">
+                        <p>No prompts match your current filters.</p>
+                    </div>
+                )}
             </div>
 
             {/* Tag suggestion modal */}

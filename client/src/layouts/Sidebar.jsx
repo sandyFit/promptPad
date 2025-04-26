@@ -1,20 +1,22 @@
 import { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
 import { Menu, Search, User, LogOut, Settings, Users, Tag, Star, PenTool } from 'lucide-react';
 
 const Sidebar = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const navigate = useNavigate();
     const location = useLocation();
     const { userRole } = useRole();
 
-    // Get active view from current path
-    const activeView = location.pathname.split('/')[1] || 'prompts';
-
+    // Function to determine if a route is active
     const isActiveRoute = (path) => {
-        if (path === '/') return activeView === 'prompts';
-        return activeView === path.slice(1);
+        // Special case for the root dashboard path
+        if (path === '/dashboard') {
+            return location.pathname === '/dashboard' || location.pathname === '/';
+        }
+
+        // For other routes, do exact matching
+        return location.pathname === path;
     };
 
     // Role-based navigation items with descriptions
@@ -44,6 +46,7 @@ const Sidebar = () => {
             { path: '/dashboard', icon: Search, label: 'Browse Prompts', description: 'Find and explore prompts' },
             { path: '/dashboard/create', icon: PenTool, label: 'Create Prompt', description: 'Write new prompts' },
             { path: '/dashboard/users', icon: Users, label: 'Users', description: 'Manage user accounts' },
+            { path: '/dashboard/favorites', icon: Star, label: 'Favorites', description: 'Your saved prompts' },
             { path: '/dashboard/tags', icon: Tag, label: 'Manage Tags', description: 'Organize prompt categories' },
             { path: '/dashboard/profile', icon: User, label: 'Profile', description: 'Your profile settings' },
             { path: '/dashboard/settings', icon: Settings, label: 'Settings', description: 'App preferences' }

@@ -5,22 +5,35 @@ const Navbar = () => {
     const location = useLocation();
     const { userRole, setUserRole } = useRole();
 
-    // Get active view from URL
+    // Get active view from URL - optimized for Outlet structure
     const getActiveView = () => {
-        const path = location.pathname.split('/')[1];
-        return path || 'prompts';
+        const path = location.pathname;
+
+        // Handle root dashboard path
+        if (path === '/' || path === '/dashboard') {
+            return 'prompts';
+        }
+
+        // For dashboard sub-routes, extract the last segment
+        if (path.startsWith('/dashboard/')) {
+            return path.split('/').pop();
+        }
+
+        // Default fallback
+        return 'prompts';
     };
 
     const getViewTitle = (view) => {
         const titles = {
-            prompts: 'Prompt Library',
+            prompts: 'Prompt Collection',
             users: 'User Management',
             profile: 'Your Profile',
             settings: 'Settings',
             favorites: 'Favorite Prompts',
-            tags: 'Manage Tags'
+            tags: 'Manage Tags',
+            create: 'Create New Prompt'
         };
-        return titles[view] || 'Prompt Library';
+        return titles[view] || 'Prompt Collection';
     };
 
     // Role badge colors
