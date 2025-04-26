@@ -3,7 +3,7 @@ import { useRole } from '../context/RoleContext';
 import { Plus, Edit2, Trash2, Check, X } from 'lucide-react';
 import BtnPrimary from '../components/buttons/BtnPrimary';
 
-const Tags = () => {
+const TagManagement = () => {
     const { userRole } = useRole();
     const [tags, setTags] = useState([
         { id: 1, name: 'creative', approved: true },
@@ -194,4 +194,4 @@ const Tags = () => {
     );
 };
 
-export default Tags;
+export default TagManagement;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, PenTool, Library, BookOpen, Settings } from 'lucide-react';
+import { ArrowRight, PenTool, Library, BookOpen, Settings, FileStack, SquareStack, SquareStackIcon, ChartColumnStacked, LucideSquareStack } from 'lucide-react';
 import BtnPrimary from '../components/buttons/BtnPrimary';
 import features from '../data/features';
 import LandingCard from '../components/cards/LandingCard';
@@ -19,6 +19,7 @@ const Landing = () => {
     return (
         <section className='w-full h-screen bg-purple-100 px-24 pt-4 flex flex-col justify-between'>
             <header className='flex justify-between items-center'>
+                
                 <h4 className="text-xl font-bold">PromptStack</h4>
                 <div className="border-2 border-purple-600 text-purple-600 rounded">
                     <BtnPrimary
@@ -55,7 +56,7 @@ const Landing = () => {
                 </div>
             </div>
 
-            <footer className='w-full py-4 text-center text-gray-600'>
+            <footer className='w-full py-4 text-right text-gray-600'>
                 &copy; {new Date().getFullYear()} <strong>PromptStack</strong> — Built with love by Trish 💜
             </footer>
         </section>
