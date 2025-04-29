@@ -129,7 +129,8 @@ const Prompts = () => {
                 <SearchBar />
 
                 <div className="flex gap-3">
-                    <div className="border-2 border-purple-600 rounded text-purple-600 ">
+                    <div className="border border-purple-600 rounded text-purple-600 
+                        hover:border-gray-200 hover:text-gray-800">
                         <BtnPrimary
                             onClick={toggleFavoritesFilter}
                             iconLeft={<Star size={16} />}

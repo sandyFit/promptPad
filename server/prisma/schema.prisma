@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users
+model User {
+  id             String           @id @default(uuid())
+  username       String           @unique
+  email          String           @unique
+  passwordHash   String           @map("password_hash")
+  role           Role             @default(VIEWER)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  // Relations
+  prompts        Prompt[]
+  favorites      Favorite[]
+  tagSuggestions TagSuggestion[]
+  approvals      Approval[]
+  sessions       Session[]
+
+  @@map("users")
+}
+
+enum Role {
+  VIEWER
+  CONTRIBUTOR
+  MODERATOR
+  ADMIN
+}
+
+// Model to implement session-based authentication
+model Session {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Prompts
+model Prompt {
+  id             String       @id @default(uuid())
+  title          String       @db.VarChar(256)
+  content        String       @db.Text
+  summary        String       @db.Text
+  isPublished    Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relations
+  contributorId  String       @map("contributor_id")
+  contributor    User         @relation(fields: [contributorId], references: [id])
+  tags           PromptTag[]
+  favorites      Favorite[]
+  approvals      Approval[]
+
+  @@map("prompts")
+}
+
+// Tags
+model Tag {
+  id           String           @id @default(uuid())
+  name         String           @unique
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  // Relations
+  prompts      PromptTag[]
+  suggestions  TagSuggestion[]
+
+  @@map("tags")
+}
+
+// Junction table for prompts and tags (many-to-many)
+model PromptTag {
+  id         String    @id @default(uuid())
+  promptId   String
+  tagId      String
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  prompt     Prompt    @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  tag        Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([promptId, tagId])
+  @@map("prompt_tags")
+}
+
+// Favorites
+model Favorite {
+  id         String    @id @default(uuid())
+  userId     String
+  promptId   String
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prompt     Prompt    @relation(fields: [promptId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, promptId])
+  @@map("favorites")
+}
+
+// Tag suggestions from contributors
+model TagSuggestion {
+  id         String           @id @default(uuid())
+  userId     String
+  tagId      String
+  status     SuggestionStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  // Relations
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tag        Tag              @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@map("tag_suggestions")
+}
+
+enum SuggestionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Approval workflow for prompts
+model Approval {
+  id           String         @id @default(uuid())
+  promptId     String
+  approverId   String         @map("approver_id")
+  status       ApprovalStatus @default(PENDING)
+  comments     String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  // Relations
+  prompt       Prompt         @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  approver     User           @relation(fields: [approverId], references: [id])
+
+  @@map("approvals")
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

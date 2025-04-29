@@ -9,7 +9,7 @@ const TagComponent = ({ tagLegend, bgColor, textColor, onDelete, onEdit, showAct
     const canDeleteTag = ['moderator', 'admin'].includes(userRole);
 
     return (
-        <div className={`px-3 py-1 rounded-full ${bgColor} ${textColor} flex items-center`}>
+        <div className={`px-3 py-1 rounded-full ${textColor} ${bgColor} flex items-center`}>
             <TagIcon size={14} className="mr-1" />
             <span>{tagLegend}</span>
 

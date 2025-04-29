@@ -25,13 +25,13 @@ const Navbar = () => {
 
     const getViewTitle = (view) => {
         const titles = {
-            prompts: 'Prompt Collection',
+            prompts: 'Your Prompt Collection',
             users: 'User Management',
             profile: 'Your Profile',
             settings: 'Settings',
-            favorites: 'Favorite Prompts',
+            favorites: 'Your Favorite Prompts',
             tags: 'Manage Tags',
-            create: 'Create New Prompt'
+            create: 'Create A New Prompt'
         };
         return titles[view] || 'Prompt Collection';
     };
