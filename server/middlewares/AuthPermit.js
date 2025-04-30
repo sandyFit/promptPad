@@ -1,6 +1,5 @@
 const permit = require('./permitClient');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../prisma/prismaClient');
 
 /**
  * Check if a user has permission to perform an action on a resource

@@ -1,4 +1,4 @@
-const { Permit } = require("@permitio/permit");
+const { Permit } = require("permitio");
 require("dotenv").config();
 
 const permit = new Permit({

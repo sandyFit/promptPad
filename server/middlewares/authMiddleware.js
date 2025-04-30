@@ -1,5 +1,8 @@
 const prisma = require('../prisma/prismaClient');
 
+/**
+ * Middleware to require authentication for protected routes
+ */
 function requireAuth(req, res, next) {
     try {
         const token = req.cookies.session;
@@ -27,6 +30,7 @@ function requireAuth(req, res, next) {
                 }
 
                 if (session.expiresAt < new Date()) {
+                    // Clean up expired session
                     return prisma.session.delete({
                         where: { id: session.id },
                     })
@@ -40,6 +44,7 @@ function requireAuth(req, res, next) {
                         });
                 }
 
+                // Set user info on request object for downstream use
                 req.user = {
                     id: session.user.id,
                     email: session.user.email,
@@ -72,5 +77,31 @@ function requireAuth(req, res, next) {
     }
 }
 
-module.exports = { requireAuth };
+/**
+ * Middleware to check if user has required role
+ * @param {string|string[]} roles - Single role or array of roles that have access
+ */
+function requireRole(roles) {
+    return (req, res, next) => {
+        // First ensure the user is authenticated
+        requireAuth(req, res, (err) => {
+            if (err) return next(err);
 
+            // Convert single role to array for consistent handling
+            const allowedRoles = Array.isArray(roles) ? roles : [roles];
+
+            // Check if user's role is in the allowed roles
+            if (!allowedRoles.includes(req.user.role)) {
+                return res.status(403).json({
+                    code: 'FORBIDDEN',
+                    error: 'Access denied',
+                    message: 'You do not have permission to access this resource',
+                });
+            }
+
+            next();
+        });
+    };
+}
+
+module.exports = { requireAuth, requireRole };

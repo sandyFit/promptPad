@@ -15,27 +15,45 @@ async function setupPermitRoles() {
             { key: 'nsfwQueue', name: 'NSFW Queue', description: 'Pending prompts marked as NSFW' },
         ];
 
+        // Create resources if they don't exist
         for (const resource of resources) {
-            await permit.api.resources.create({
-                key: resource.key,
-                name: resource.name,
-                description: resource.description,
-                actions: [
-                    { key: 'create', name: 'Create' },
-                    { key: 'read', name: 'Read' },
-                    { key: 'update', name: 'Update' },
-                    { key: 'delete', name: 'Delete' },
-                    { key: 'review', name: 'Review' },
-                    { key: 'approve', name: 'Approve' },
-                    { key: 'reject', name: 'Reject' },
-                    { key: 'list', name: 'List' },
-                    { key: 'favorite', name: 'Favorite' },
-                    { key: 'unfavorite', name: 'Unfavorite' },
-                    { key: 'suggest', name: 'Suggest' },
-                    { key: 'approveSuggestion', name: 'Approve Suggestion' },
-                    { key: 'rejectSuggestion', name: 'Reject Suggestion' }
-                ]
-            });
+            try {
+                // Check if resource exists
+                const existingResource = await permit.api.resources.get(resource.key).catch(() => null);
+
+                if (!existingResource) {
+                    console.log(`Creating resource: ${resource.key}`);
+                    await permit.api.resources.create({
+                        key: resource.key,
+                        name: resource.name,
+                        description: resource.description,
+                        actions: [
+                            { key: 'create', name: 'Create' },
+                            { key: 'read', name: 'Read' },
+                            { key: 'update', name: 'Update' },
+                            { key: 'delete', name: 'Delete' },
+                            { key: 'review', name: 'Review' },
+                            { key: 'approve', name: 'Approve' },
+                            { key: 'reject', name: 'Reject' },
+                            { key: 'list', name: 'List' },
+                            { key: 'favorite', name: 'Favorite' },
+                            { key: 'unfavorite', name: 'Unfavorite' },
+                            { key: 'suggest', name: 'Suggest' },
+                            { key: 'approveSuggestion', name: 'Approve Suggestion' },
+                            { key: 'rejectSuggestion', name: 'Reject Suggestion' }
+                        ]
+                    });
+                } else {
+                    console.log(`Resource ${resource.key} already exists, skipping creation`);
+                }
+            } catch (error) {
+                // If error is not a 409 (already exists), log it
+                if (!error.status || error.status !== 409) {
+                    console.error(`Error creating resource ${resource.key}:`, error);
+                } else {
+                    console.log(`Resource ${resource.key} already exists, skipping creation`);
+                }
+            }
         }
 
         // Define roles with their permissions
@@ -128,21 +146,39 @@ async function setupPermitRoles() {
             }
         ];
 
+        // Create or update roles and assign permissions
+        // Create or update roles and assign permissions
         for (const role of roles) {
-            await permit.api.roles.create({
-                key: role.key,
-                name: role.name,
-                description: role.description
-            });
+            try {
+                // Check if role exists
+                const existingRole = await permit.api.roles.get(role.key).catch(() => null);
 
-            for (const permission of role.permissions) {
-                await permit.api.roles.assignPermissions(role.key, {
-                    resource: permission.resource,
-                    action: permission.action,
-                    condition: permission.condition || undefined
-                });
+                if (!existingRole) {
+                    console.log(`Creating role: ${role.key}`);
+                    await permit.api.roles.create({
+                        key: role.key,
+                        name: role.name,
+                        description: role.description
+                    });
+                } else {
+                    console.log(`Role ${role.key} already exists, updating permissions`);
+                }
+
+                // ✅ Loop over the permissions array for this role
+                const permissionObjects = role.permissions.map(p => ({
+                    resource: p.resource,
+                    action: p.action,
+                    condition: p.condition || undefined
+                }));
+
+                await permit.api.roles.addPermissions(role.key, permissionObjects);
+
+                console.log(`✅ Assigned permissions to role ${role.key}`);
+            } catch (error) {
+                console.error(`❌ Error processing role ${role.key}:`, error);
             }
         }
+
 
         console.log('✅ Successfully set up Permit.io roles and permissions!');
     } catch (error) {
