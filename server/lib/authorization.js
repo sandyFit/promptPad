@@ -1,12 +1,10 @@
-import { Oso } from "oso";
-import { Prompt, User } from "@prisma/client"; 
+const { Oso } = require("oso");
+const path = require("path");
 
 const oso = new Oso();
 
-await oso.registerClass(User);
-await oso.registerClass(Prompt);
+(async () => {
+    await oso.loadFiles([path.join(__dirname, "policy.polar")]);
+})();
 
-// Load your .polar policy
-await oso.loadFiles(["./lib/policy.polar"]);
-
-export default oso;
+module.exports = oso;

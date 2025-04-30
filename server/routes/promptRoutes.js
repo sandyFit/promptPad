@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const promptController = require('../controllers/promptController');
 const { requireAuth } = require('../middleware/authMiddleware');
-const { checkPermission } = require('../middleware/AuthPermit');
+const authorize = require('../middleware/osoAuthMiddleware');
+const prisma = require('../prisma/prismaClient');
+const { z } = require('zod');
 
 // Prompt Routes
 
@@ -15,7 +17,7 @@ router.get('/prompts/:id', requireAuth, promptController.getPromptById);
 router.post(
     '/prompts',
     requireAuth,
-    checkPermission('prompt', 'create'),
+    authorize("create"),
     promptController.createPrompt
 );
 
@@ -23,7 +25,10 @@ router.post(
 router.put(
     '/prompts/:id',
     requireAuth,
-    checkPermission('prompt', 'update'),
+    authorize("edit", async (req) => {
+        const id = req.params.id;
+        return await prisma.prompt.findUnique({ where: { id } });
+    }),
     promptController.updatePrompt
 );
 
@@ -31,39 +36,22 @@ router.put(
 router.delete(
     '/prompts/:id',
     requireAuth,
-    checkPermission('prompt', 'delete'),
+    authorize("delete", async (req) => {
+        const id = req.params.id;
+        return await prisma.prompt.findUnique({ where: { id } });
+    }),
     promptController.deletePrompt
 );
 
-// Approval workflow - only moderators or admins
+// Approve prompt (moderator or admin)
 router.post(
     '/prompts/:id/approve',
     requireAuth,
-    checkPermission('approval', 'create'),
+    authorize("approve", async (req) => {
+        const id = req.params.id;
+        return await prisma.prompt.findUnique({ where: { id } });
+    }),
     promptController.approvePrompt
-);
-
-// Tag management routes
-router.post(
-    '/tags',
-    requireAuth,
-    checkPermission('tag', 'create'),
-    promptController.createTag
-);
-
-// Tag suggestion routes
-router.post(
-    '/tag-suggestions',
-    requireAuth,
-    checkPermission('tagSuggestion', 'create'),
-    promptController.createTagSuggestion
-);
-
-router.put(
-    '/tag-suggestions/:id',
-    requireAuth,
-    checkPermission('tagSuggestion', 'update'),
-    promptController.updateTagSuggestion
 );
 
 module.exports = router;
