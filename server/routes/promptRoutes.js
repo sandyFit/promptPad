@@ -1,56 +1,58 @@
 const express = require('express');
 const router = express.Router();
 const promptController = require('../controllers/promptController');
-const { requireAuth } = require('../middleware/authMiddleware');
-const authorize = require('../middleware/osoAuthMiddleware');
-const prisma = require('../prisma/prismaClient');
-const { z } = require('zod');
+const { requireAuth, requireRole, checkOwnership } = require('../middlewares/authMiddleware');
 
-// Prompt Routes
+// Verify controller methods exist
+const requiredMethods = [
+    'getAllPrompts',
+    'getPromptById',
+    'createPrompt',
+    'updatePrompt',
+    'deletePrompt',
+    'approvePrompt'
+];
 
-// Public routes - only require authentication
-router.get('/prompts', requireAuth, promptController.getAllPrompts);
-router.get('/prompts/:id', requireAuth, promptController.getPromptById);
+requiredMethods.forEach(method => {
+    if (typeof promptController[method] !== 'function') {
+        throw new Error(`promptController.${method} is not a function`);
+    }
+});
 
-// Protected routes - require both authentication and authorization
-// Create a new prompt - any authenticated user with 'create' permission on 'prompt' resource
+// Public routes (still require authentication)
+router.get('/', requireAuth, promptController.getAllPrompts);
+router.get('/:id', requireAuth, promptController.getPromptById);
+
+// Contributor routes
 router.post(
-    '/prompts',
+    '/',
     requireAuth,
-    authorize("create"),
+    requireRole('CONTRIBUTOR'),
     promptController.createPrompt
 );
 
-// Update a prompt - requires ownership check or admin permission
+// Protected routes with ownership check
 router.put(
-    '/prompts/:id',
+    '/:id',
     requireAuth,
-    authorize("edit", async (req) => {
-        const id = req.params.id;
-        return await prisma.prompt.findUnique({ where: { id } });
-    }),
+    requireRole('CONTRIBUTOR'),
+    checkOwnership('prompt'),
     promptController.updatePrompt
 );
 
-// Delete a prompt - requires ownership check or admin permission
 router.delete(
-    '/prompts/:id',
+    '/:id',
     requireAuth,
-    authorize("delete", async (req) => {
-        const id = req.params.id;
-        return await prisma.prompt.findUnique({ where: { id } });
-    }),
+    requireRole('CONTRIBUTOR'),
+    checkOwnership('prompt'),
     promptController.deletePrompt
 );
 
-// Approve prompt (moderator or admin)
+// Moderator routes
 router.post(
-    '/prompts/:id/approve',
+    '/:id/approve',
     requireAuth,
-    authorize("approve", async (req) => {
-        const id = req.params.id;
-        return await prisma.prompt.findUnique({ where: { id } });
-    }),
+    requireRole('MODERATOR'),
     promptController.approvePrompt
 );
 

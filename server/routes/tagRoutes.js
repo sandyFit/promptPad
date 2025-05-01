@@ -1,20 +1,37 @@
-// Tag management routes
+const express = require('express');
+const router = express.Router();
+const tagController = require('../controllers/tagController');
+
+
 router.post(
     '/tags',
     requireAuth,
-    checkPermission('tag', 'create'),
-    promptController.createTag
+    tagController.createTag
 );
 
 // Tag suggestion routes
 router.post(
     '/tag-suggestions',
     requireAuth,
-    promptController.createTagSuggestion
+    tagController.createTagSuggestion
 );
 
 router.put(
     '/tag-suggestions/:id',
     requireAuth,
-    promptController.updateTagSuggestion
+    tagController.updateTagSuggestion
 );
+
+router.get(
+    '/tag-suggestions',
+    requireAuth,
+    tagController.getAllTagSuggestions
+);
+
+router.get(
+    '/tag-suggestions/:id',
+    requireAuth,
+    tagController.getTagSuggestionById
+);
+
+module.exports = router;

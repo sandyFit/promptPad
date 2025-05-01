@@ -1,29 +1,30 @@
-# Roles
-allow(user: User, "read", prompt: Prompt) if true;
+const policyRules = `
+# Base role permissions
+has_permission(user: User, "read") if user.role in ["VIEWER", "CONTRIBUTOR", "MODERATOR", "ADMIN"];
+has_permission(user: User, "create") if user.role in ["CONTRIBUTOR", "MODERATOR", "ADMIN"];
+has_permission(user: User, "moderate") if user.role in ["MODERATOR", "ADMIN"];
 
-allow(user: User, "favorite", prompt: Prompt) if true;
-
-# Contributor can create/edit/delete their own prompts
+# Prompt-specific permissions
+# Contributors: own prompts only
 allow(user: User, action, prompt: Prompt) if
-    action in ["create", "edit", "delete"] and
+    action in ["edit", "delete"] and
     user.role = "CONTRIBUTOR" and
-    prompt.author_id = user.id;
+    prompt.contributorId = user.id;
 
-# Contributors can become moderators after 20 approved prompts
-allow(user: User, "moderate", prompt: Prompt) if
-    user.role = "CONTRIBUTOR" and
-    user.approved_prompt_count >= 20;
-
-# Moderators can moderate regular prompts
-allow(user: User, "moderate", prompt: Prompt) if
+# Moderators: all prompts except admin's
+allow(user: User, action, prompt: Prompt) if
+    action in ["edit", "delete", "moderate"] and
     user.role = "MODERATOR" and
-    prompt.is_nsfw = false;
+    prompt.contributor.role != "ADMIN";
 
-# Admin can moderate any prompt
-allow(user: User, "moderate", prompt: Prompt) if
+# Admins: full access
+allow(user: User, action, prompt: Prompt) if
     user.role = "ADMIN";
 
-# Only admin can approve NSFW prompts
-allow(user: User, "approve", prompt: Prompt) if
-    user.role = "ADMIN" and
-    prompt.is_nsfw = true;
+# Public access for published prompts
+allow(user: User, "read", prompt: Prompt) if
+    prompt.isPublished = true or
+    prompt.contributorId = user.id;
+`;
+
+oso.loadStr(policyRules);
