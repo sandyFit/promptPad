@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Edit, Star, Trash2 } from 'lucide-react';
 
+
 const PromptCard = ({ prompt, canEditPrompt, canDeletePrompt }) => {
-    // All users including viewers can favorite prompts
     const [isFavorite, setIsFavorite] = useState(prompt.isFavorite || false);
 
     const toggleFavorite = () => {
@@ -51,15 +51,15 @@ const PromptCard = ({ prompt, canEditPrompt, canDeletePrompt }) => {
 
             <div className="flex justify-between items-center">
                 <div className="flex gap-2">
-                    {prompt.tags.map(tag => (
+                    {prompts.tags.map(tag => (
                         <span key={tag} className="bg-gray-100 text-xs px-2 py-1 rounded text-gray-600">
                             {tag}
                         </span>
                     ))}
                 </div>
-                <div className="text-xs text-gray-500">
-                    By {prompt.createdBy.split('@')[0]}
-                </div>
+                {/* <div className="text-xs text-gray-500">
+                    By {prompt.contributor.name}
+                </div> */}
             </div>
         </article>
     );

@@ -11,7 +11,7 @@ import {
     DELETE_PROMPT,
     APPROVE_PROMPT,
 } from '../utils/reducer';
-import { get } from '../../../server/routes/authRoutes';
+
 
 const initialState = {
     allPrompts: [],
@@ -124,7 +124,7 @@ export const PromptProvider = ({ children }) => {
         }
     };
 
-    const deletePrompt = async (id) => { 
+    const deletePrompt = async (id) => {
         dispatch({ type: SET_LOADING, payload: true });
 
         try {
@@ -146,6 +146,27 @@ export const PromptProvider = ({ children }) => {
             dispatch({ type: SET_LOADING, payload: false });
             
         }
+    }; 
+
+    const approvePrompt = async (promptId) => { 
+        dispatch({ type: SET_LOADING, payload: true });
+
+        try {
+
+            const response = await apiClient.request(`prompts/${proomptId}`, 'PUT');
+            if (response.seccess) { 
+                dispatch({ type: APPROVE_PROMPT, payload: response.prompt });
+            };
+            return response;
+            
+        } catch (error) {
+            dispatch({ type: SET_ERROR, payload: error.message });
+            throw error;
+            
+        } finally {
+            dispatch({ type: SET_LOADING, payload: false });
+            
+        }
     }
 
     const value = {
@@ -157,7 +178,8 @@ export const PromptProvider = ({ children }) => {
         getAllPrompts,
         getPromptById,
         updatePrompt,
-        deletePrompt
+        deletePrompt,
+        approvePrompt
     };
 
     return (
@@ -166,4 +188,4 @@ export const PromptProvider = ({ children }) => {
         </PromptContext.Provider>
     );
 }
-P
+

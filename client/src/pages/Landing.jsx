@@ -4,6 +4,8 @@ import { ArrowRight, PenTool, Library, BookOpen, Settings, FileStack, SquareStac
 import BtnPrimary from '../components/buttons/BtnPrimary';
 import features from '../data/features';
 import LandingCard from '../components/cards/LandingCard';
+import LandingNavbar from '../layouts/LandingNavbar';
+import Footer from '../layouts/Footer';
 
 const Landing = () => {
     const navigate = useNavigate();
@@ -20,17 +22,7 @@ const Landing = () => {
 
     return (
         <section className='w-full h-screen bg-purple-100 px-24 pt-4 flex flex-col justify-between'>
-            <header className='flex justify-between items-center'>
-                
-                <h4 className="text-xl font-bold">PromptStack</h4>
-                <div className="border-2 border-purple-600 text-purple-600 rounded">
-                    <BtnPrimary 
-                        onClick={() => navigate('/login')}
-                        btnLegend="Sign In"
-                        iconRight={<ArrowRight size={16} />}
-                    />
-                </div>
-            </header>
+            <LandingNavbar />
             <div className="flex flex-col justify-center items-center -mt-10">
                 <h1 className='text-5xl font-bold py-8 text-center'>
                     Collaborate, Create, and Master AI Prompts with
@@ -62,9 +54,7 @@ const Landing = () => {
                 </div>
             </div>
 
-            <footer className='w-full py-4 text-right text-gray-600'>
-                &copy; {new Date().getFullYear()} <strong>PromptStack</strong> — Built with love by Trish 💜
-            </footer>
+            <Footer />
         </section>
     )
 }

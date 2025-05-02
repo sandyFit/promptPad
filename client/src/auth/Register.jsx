@@ -5,6 +5,8 @@ import LoadingSpinner from '../components/ui/LoaderSpinner';
 import { toast } from 'react-hot-toast'
 import { ArrowRight, Home } from 'lucide-react';
 import BtnPrimary from '../components/buttons/BtnPrimary';
+import Footer from '../layouts/Footer';
+import LandingNavbar from '../layouts/LandingNavbar';
 
 const Register = () => {
     const [credentials, setCredentials] = useState({
@@ -95,25 +97,10 @@ const Register = () => {
     };
 
     return (
-        <article className="w-full h-screen bg-purple-100 px-24 pt-4 ">
+        <section className="w-full h-screen bg-purple-100 px-24 pt-4 flex flex-col justify-between">
+            <LandingNavbar />
             <div className='w-full flex flex-col justify-center items-center'>
-                <header className='w-full flex justify-between items-center'>
-                    <Link to="/">
-                        <h4 className="text-xl font-bold">
-                            PromptStack
-                        </h4>
-                    </Link>
-
-                    <div className="border-2 border-purple-600 text-purple-600 rounded">
-                        <BtnPrimary
-                            onClick={() => navigate('/login')}
-                            btnLegend="Sign In"
-                            iconRight={<ArrowRight size={16} />}
-                        />
-                    </div>                   
-                </header>
-
-                <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md mt-20">
+                <article className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
                     <div>
                         <h2 className="text-center text-3xl font-extrabold text-gray-900">
                             Create an account 
@@ -211,9 +198,10 @@ const Register = () => {
                             </Link> 
                         </p>
                     </form>
-                </div>
+                </article>
             </div>
-        </article>
+            <Footer />
+        </section>
     );
 }
 
