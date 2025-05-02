@@ -4,6 +4,7 @@ export const SET_PROMPT = 'SET_PROMPT';
 export const UPDATE_PROMPT = 'UPDATE_PROMPT';
 export const DELETE_PROMPT = 'DELETE_PROMPT';
 export const APPROVE_PROMPT = 'APPROVE_PROMPT';
+// Users
 export const CREATE_USER = 'CREATE_USER';
 export const SET_ALL_USERS = 'SET_ALL_USERS';
 export const SET_USER = 'SET_USER'; 
@@ -13,12 +14,14 @@ export const SET_PROFILE_USER = 'SET_PROFILE_USER';
 export const UPDATE_USER_PROFILE = 'UPDATE_USER_PROFILE';
 export const APPROVE_CONTRIBUTOR = 'APPROVE_CONTRIBUTOR';
 export const APPROVE_MODERATOR = 'APPROVE_MODERATOR';
+// Tags
 export const CREATE_TAG = 'CREATE_TAG';
 export const SET_ALL_TAGS = 'SET_ALL_TAGS';
 export const SET_TAG = 'SET_TAG';
 export const UPDATE_TAG = 'UPDATE_TAG';
 export const DELETE_TAG = 'DELETE_TAG';
 export const APPROVE_TAG = 'APPROVE_TAG';
+// Error and Loading
 export const SET_ERROR = 'SET_ERROR';
 export const SET_LOADING = 'SET_LOADING';
 

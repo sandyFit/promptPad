@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
     const loginUser = async (userData) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request('/auth/login', 'POST', userData);
+            const response = await apiClient.request('auth/login', 'POST', userData);
             dispatch({ type: SET_USER, payload: response.data });
             toast.success('Logged in successfully!');
         } catch (err) {
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }) => {
     const logoutUser = async () => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            await apiClient.request('/auth/logout', 'POST');
+            await apiClient.request('auth/logout', 'POST');
             dispatch({ type: SET_USER, payload: null });
             toast.success('Logged out successfully!');
         } catch (err) {
@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }) => {
     const getUserProfile = async () => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request('/auth/profile');
+            const response = await apiClient.request('auth/profile');
             dispatch({ type: SET_PROFILE_USER, payload: response.data });
         } catch (err) {
             dispatch({ type: SET_ERROR, payload: err.message });
@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }) => {
     const updateUserProfile = async (userData) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request('/auth/profile', 'PUT',  userData);
+            const response = await apiClient.request('auth/profile', 'PUT',  userData);
             dispatch({ type: UPDATE_USER_PROFILE, payload: response.data });
             toast.success('Profile updated successfully!');
         } catch (err) {
@@ -127,7 +127,7 @@ export const AuthProvider = ({ children }) => {
     const getAllUsers = async () => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request('/auth/users');
+            const response = await apiClient.request('auth');
             dispatch({ type: SET_ALL_USERS, payload: response.data });
         } catch (err) {
             dispatch({ type: SET_ERROR, payload: err.message });
@@ -140,7 +140,7 @@ export const AuthProvider = ({ children }) => {
     const updateUser = async (userId, userData) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request(`/auth/users/${userId}`, 'PUT',  userData);
+            const response = await apiClient.request(`auth/users/${userId}`, 'PUT',  userData);
             dispatch({ type: UPDATE_USER, payload: response.data });
             toast.success('User updated successfully!');
         } catch (err) {
@@ -154,7 +154,7 @@ export const AuthProvider = ({ children }) => {
     const deleteUser = async (userId) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request(`/auth/users/${userId}, 'DELETE'`);
+            const response = await apiClient.request(`auth/users/${userId}, 'DELETE'`);
             dispatch({ type: DELETE_USER, payload: response.data });
             toast.success('User deleted successfully!');
         } catch (err) {
@@ -168,7 +168,7 @@ export const AuthProvider = ({ children }) => {
     const approveContributor = async (userId) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request(`/auth/users/${userId}/approve, 'PUT'`);
+            const response = await apiClient.request(`auth/users/${userId}/approve-contributor, 'PUT'`);
             dispatch({ type: APPROVE_CONTRIBUTOR, payload: response.data });
             toast.success('User approved successfully!');
         } catch (err) {
@@ -182,7 +182,7 @@ export const AuthProvider = ({ children }) => {
     const approveModerator = async (userId) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request(`/auth/users/${userId}/approve-moderator`, 'PUT');
+            const response = await apiClient.request(`auth/users/${userId}/approve-moderator`, 'PUT');
             dispatch({ type: APPROVE_MODERATOR, payload: response.data });
             toast.success('Moderator approved successfully!');
         } catch (err) {

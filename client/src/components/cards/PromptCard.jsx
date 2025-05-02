@@ -46,7 +46,7 @@ const PromptCard = ({ prompt, canEditPrompt, canDeletePrompt }) => {
             </div>
 
             <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                {prompt.content}
+                {prompt.summary}
             </p>
 
             <div className="flex justify-between items-center">
