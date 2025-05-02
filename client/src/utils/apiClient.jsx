@@ -10,7 +10,7 @@ class ApiClient {
         this.axiosInstance = axios.create({
             baseURL: BASE_URL,
             timeout: 10000,
-            withCredentials: true, T
+            withCredentials: true, 
         });
 
         this.setupInterceptors();
@@ -24,7 +24,7 @@ class ApiClient {
                 return config;
             },
             error => {
-                console.error('Reequest interceptor error;', error);
+                console.error('Request interceptor error;', error);
                 return Promise.reject(error);
             }
         );
@@ -62,23 +62,24 @@ class ApiClient {
 
         // Add CORS specific error handling
         if (error.message.includes('Network Error') || error.message.includes('CORS')) {
-            const message = i18next.t('errors.corsError', {
+            const message = {
+                text: 'CORS Error. Please check your connection.',
                 origin: window.location.origin,
                 api: BASE_URL
-            });
+            };
             toast.error(message);
-            // console.error('CORS Error:', {
-            //     origin: window.location.origin,
-            //     api: BASE_URL,
-            //     error: error.message
-            // });
+            console.error('CORS Error:', {
+                origin: window.location.origin,
+                api: BASE_URL,
+                error: error.message
+            });
             throw new Error(message);
         };
 
         if (!error.response) {
             // Network error
-            toast.error(i18next.t('errors.networkError'));
-            throw new Error(i18next.t('errors.networkError'));
+            toast.error('Network error. Please check your connection.');
+            throw new Error('Network error. Please check your connection.');
         }
 
         const { status, data } = error.response;
@@ -89,15 +90,15 @@ class ApiClient {
         // Handle 401 Unauthorized
         if (status === 401 && !isPublicRoute) {
             localStorage.removeItem('token');
-            const message = i18next.t('auth.sessionExpired');
+            const message = 'You are not authorized to access this resource.';
             toast.error(message);
             throw new Error(message);
         }
 
         // Handle other errors
         const message = data?.message
-            ? i18next.t(data.message)
-            : i18next.t('errors.operationFailed');
+            ? toast.error(data.message)
+            : 'An error occurred. Please try again.';
 
         toast.error(message);
         throw new Error(message);
@@ -144,15 +145,15 @@ class ApiClient {
         }
     }
 
-    // logRequest(config) {
-    //     console.log('📝 Request:', {
-    //         method: config.method.toUpperCase(),
-    //         url: config.url,
-    //         fullUrl: config.baseURL + config.url, 
-    //         headers: config.headers,
-    //         data: config.data || 'No body',
-    //     });
-    // }
+    logRequest(config) {
+        console.log('📝 Request:', {
+            method: config.method.toUpperCase(),
+            url: config.url,
+            fullUrl: config.baseURL + config.url, 
+            headers: config.headers,
+            data: config.data || 'No body',
+        });
+    }
 
     shouldRetry(error) {
         // Retry on network errors or 5xx server errors

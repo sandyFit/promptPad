@@ -1,5 +1,4 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
 
 const BtnPrimary = ({ onClick, iconLeft, btnLegend, iconRight }) => {
     return (

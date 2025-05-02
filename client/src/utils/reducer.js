@@ -7,8 +7,12 @@ export const APPROVE_PROMPT = 'APPROVE_PROMPT';
 export const CREATE_USER = 'CREATE_USER';
 export const SET_ALL_USERS = 'SET_ALL_USERS';
 export const SET_USER = 'SET_USER'; 
+export const UPDATE_USER = 'UPDATE_USER';
+export const DELETE_USER = 'DELETE_USER';
 export const SET_PROFILE_USER = 'SET_PROFILE_USER';
 export const UPDATE_USER_PROFILE = 'UPDATE_USER_PROFILE';
+export const APPROVE_CONTRIBUTOR = 'APPROVE_CONTRIBUTOR';
+export const APPROVE_MODERATOR = 'APPROVE_MODERATOR';
 export const CREATE_TAG = 'CREATE_TAG';
 export const SET_ALL_TAGS = 'SET_ALL_TAGS';
 export const SET_TAG = 'SET_TAG';
@@ -59,6 +63,28 @@ export const reducer = (state, action) => {
                 ...state,
                 allUsers: state.allUsers.map(user => user._id === action.payload._id ? action.payload : user)
             };
+        case UPDATE_USER:
+            return {
+                ...state,
+                allUsers: state.allUsers.map(user => user._id === action.payload._id ? action.payload : user)
+            }
+        case DELETE_USER:
+            return {
+                ...state,
+                allUsers: state.allUsers.filter(user => user._id !== action.payload)
+            }
+        case APPROVE_CONTRIBUTOR:
+            return {
+                ...state,
+                allUsers: state.allUsers.map(user => user._id === action.payload._id ? action.payload : user)
+            }
+        case APPROVE_MODERATOR:
+            return {
+                ...state,
+                allUsers: state.allUsers.map(user => user._id === action.payload._id ? action.payload : user)
+            }
+        
+        
         case CREATE_TAG:
             return { ...state, allTags: [...state.allTags, action.payload] };
         case SET_ALL_TAGS:

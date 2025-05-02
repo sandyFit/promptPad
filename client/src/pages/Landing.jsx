@@ -1,10 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, PenTool, Library, BookOpen, Settings, FileStack, SquareStack, SquareStackIcon, ChartColumnStacked, LucideSquareStack } from 'lucide-react';
 import BtnPrimary from '../components/buttons/BtnPrimary';
 import features from '../data/features';
 import LandingCard from '../components/cards/LandingCard';
 
 const Landing = () => {
+    const navigate = useNavigate();
 
     const getIconForFeature = (id) => {
         switch (id) {
@@ -22,7 +24,8 @@ const Landing = () => {
                 
                 <h4 className="text-xl font-bold">PromptStack</h4>
                 <div className="border-2 border-purple-600 text-purple-600 rounded">
-                    <BtnPrimary
+                    <BtnPrimary 
+                        onClick={() => navigate('/login')}
                         btnLegend="Sign In"
                         iconRight={<ArrowRight size={16} />}
                     />
@@ -41,7 +44,10 @@ const Landing = () => {
                 </h3>
 
                 <div className="bg-purple-600 text-white mt-6 rounded">
-                    <BtnPrimary btnLegend="Get Started with PromptStack" iconRight={<ArrowRight size={16} />} />
+                    <BtnPrimary
+                        onClick={() => navigate('/register')}
+                        btnLegend="Get Started with PromptStack"
+                        iconRight={<ArrowRight size={16} />} />
                 </div>
 
                 <div className="flex justify-center items-center mt-16 gap-8 flex-wrap">
