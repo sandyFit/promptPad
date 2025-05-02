@@ -42,28 +42,27 @@ export const AuthProvider = ({ children }) => {
     const registerUser = async (userData) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            // Remove confirmPass before sending
-            const { confirmPass, ...registrationData } = userData;
-
-            console.log('Sending registration data:', registrationData);
+            // Validate required fields
+            if (!userData.username || !userData.email || !userData.password) {
+                throw new Error('All fields are required');
+            }
 
             const response = await apiClient.request(
                 'auth/register',
                 'POST',
-                registrationData
+                userData
             );
 
-            console.log('Registration response:', response);
-
-            if (response.success) {
+            if (response?.user) {
                 dispatch({ type: CREATE_USER, payload: response.user });
-                return response;
+                return { success: true, user: response.user };
             }
 
-            throw new Error(response.message || 'Error al registrar el usuario');
+            throw new Error(response?.message || 'Registration failed');
         } catch (error) {
             console.error('Registration error:', error);
-            throw error;
+            dispatch({ type: SET_ERROR, payload: error.message });
+            return { success: false, message: error.message };
         } finally {
             dispatch({ type: SET_LOADING, payload: false });
         }
@@ -113,7 +112,7 @@ export const AuthProvider = ({ children }) => {
     const updateUserProfile = async (userData) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request('auth/profile', 'PUT',  userData);
+            const response = await apiClient.request('auth/profile', 'PUT', userData);
             dispatch({ type: UPDATE_USER_PROFILE, payload: response.data });
             toast.success('Profile updated successfully!');
         } catch (err) {
@@ -140,7 +139,7 @@ export const AuthProvider = ({ children }) => {
     const updateUser = async (userId, userData) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request(`auth/users/${userId}`, 'PUT',  userData);
+            const response = await apiClient.request(`auth/users/${userId}`, 'PUT', userData);
             dispatch({ type: UPDATE_USER, payload: response.data });
             toast.success('User updated successfully!');
         } catch (err) {
@@ -154,7 +153,7 @@ export const AuthProvider = ({ children }) => {
     const deleteUser = async (userId) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request(`auth/users/${userId}, 'DELETE'`);
+            const response = await apiClient.request(`auth/users/${userId}`, 'DELETE');
             dispatch({ type: DELETE_USER, payload: response.data });
             toast.success('User deleted successfully!');
         } catch (err) {
@@ -168,7 +167,7 @@ export const AuthProvider = ({ children }) => {
     const approveContributor = async (userId) => {
         dispatch({ type: SET_LOADING, payload: true });
         try {
-            const response = await apiClient.request(`auth/users/${userId}/approve-contributor, 'PUT'`);
+            const response = await apiClient.request(`auth/users/${userId}/approve-contributor`, 'PUT');
             dispatch({ type: APPROVE_CONTRIBUTOR, payload: response.data });
             toast.success('User approved successfully!');
         } catch (err) {
@@ -212,13 +211,11 @@ export const AuthProvider = ({ children }) => {
         approveModerator
     };
 
-    
-  
+
+
     return (
         <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );
 };
-
-

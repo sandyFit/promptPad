@@ -26,4 +26,4 @@ const LandingNavbar = () => {
     )
 }
 
-export default LandingNavbar
+export default LandingNavbar;

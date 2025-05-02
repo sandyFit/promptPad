@@ -1,11 +1,31 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const crypto = require('crypto'); 
+const crypto = require('crypto');
 const prisma = require('../prisma/prismaClient');
-const { requireAuth } = require('../middlewares/authMiddleware'); 
+const { requireAuth } = require('../middlewares/authMiddleware');
 const router = express.Router();
 const { z } = require('zod');
 
+// Helper function to generate unique username
+const generateUniqueUsername = async (baseUsername) => {
+    let username = baseUsername;
+    let counter = 1;
+
+    while (true) {
+        // Check if username exists
+        const existing = await prisma.user.findUnique({
+            where: { username }
+        });
+
+        if (!existing) {
+            return username;
+        }
+
+        // If username exists, append number and try again
+        username = `${baseUsername}${counter}`;
+        counter++;
+    }
+};
 
 const signUpSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -40,16 +60,15 @@ router.post('/register', async (req, res) => {
             });
         }
         const { email, password, username: rawUsername, role: userRole } = user.data;
-        
-        
+
+
         // Input sanitization
         const sanitizedEmail = email.trim().toLowerCase();
         const sanitizedPassword = password.trim();
-        const sanitizedUsername = rawUsername?.trim() || sanitizedEmail.split('@')[0];
+        const baseUsername = rawUsername?.trim() || sanitizedEmail.split('@')[0];
 
-
-        // Use email as username if name is not provided
-        const username = sanitizedUsername || sanitizedEmail.split('@')[0];
+        // Generate unique username
+        const username = await generateUniqueUsername(baseUsername);
         const role = userRole?.toUpperCase() || 'VIEWER'; // Default role
 
         // Input validation
@@ -113,6 +132,13 @@ router.post('/register', async (req, res) => {
     } catch (err) {
         console.error('Signup error:', err);
 
+        if (err.code === 'P2002') {
+            const field = err.meta?.target[0];
+            return res.status(400).json({
+                error: `This ${field} is already taken`
+            });
+        }
+
         if (err instanceof z.ZodError) {
             return res.status(400).json({
                 error: 'Validation failed',
@@ -127,7 +153,7 @@ router.post('/register', async (req, res) => {
             error: 'Something went wrong during sign-up'
         });
     }
-    
+
 });
 
 const signInSchema = z.object({
