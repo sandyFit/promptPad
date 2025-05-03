@@ -1,194 +1,101 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PromptCard from '../components/cards/PromptCard';
-import BtnPrimary from '../components/buttons/BtnPrimary';
-import TagComponent from '../components/ui/TagComponent';
-import SearchBar from '../components/ui/SearchBar';
-import { Plus, X, Star } from 'lucide-react';
+
 import { usePrompt } from '../context/PromptContext';
-
-
+import PromptHeader from '../components/ui/PromptHeader';
 
 const Prompts = () => {
-    const { prompts, getAllPrompts, loading, error } = usePrompt();
+    const { allPrompts: prompts, getAllPrompts, loading, error } = usePrompt();
     const navigate = useNavigate();
-    const [showTagModal, setShowTagModal] = useState(false);
-    const [newTag, setNewTag] = useState('');
-    const [selectedTags, setSelectedTags] = useState([]);
-
-    // TODO: fetch this data from the backend
-   
-
-    const bgColors = [
-        'bg-red-100',
-        'bg-yellow-100',
-        'bg-blue-100',
-        'bg-green-100',
-        'bg-purple-100',
-        'bg-pink-100',
-        'bg-indigo-100',
-        'bg-orange-100'
-    ];
-
-    const textColors = [
-        'text-red-700',
-        'text-yellow-700',
-        'text-blue-700',
-        'text-green-700',
-        'text-violet-700',
-        'text-pink-700',
-        'text-indigo-700',
-        'text-orange-700'
-    ];
-
-    const [tags, setTags] = useState([
-        { id: 1, name: 'creative', approved: true },
-        { id: 2, name: 'stories', approved: true },
-        { id: 3, name: 'design', approved: true },
-        { id: 4, name: 'art', approved: true },
-        { id: 5, name: 'marketing', approved: true },
-        { id: 6, name: 'ecommerce', approved: true },
-        { id: 7, name: 'coding', approved: true },
-        { id: 8, name: 'development', approved: true }
-    ]);
-
-    
+    const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
-        getAllPrompts(promptsData);
-    }, []);
+        const fetchPrompts = async () => {
+            if (isInitialized) return;
+
+            try {
+                await getAllPrompts();
+                setIsInitialized(true);
+            } catch (err) {
+                console.error('Failed to fetch prompts:', err);
+                // Don't set isInitialized on error to allow retrying
+            }
+        };
+
+        fetchPrompts();
+    }, [getAllPrompts, isInitialized]);
+
+    // Retry handler
+    const handleRetry = async () => {
+        try {
+            await getAllPrompts();
+            setIsInitialized(true);
+        } catch (err) {
+            console.error('Retry failed:', err);
+        }
+    };
+
+    if (loading && !isInitialized) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-purple-500" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <section>
+                <PromptHeader />
+                <hr className='border border-gray-200 mb-6' />
+                <div className="text-center py-8">
+                    <p className="text-red-500">
+                        {error === 'Invalid response format'
+                            ? 'Unable to load prompts. Please try again.'
+                            : `Error loading prompts: ${error}`}
+                    </p>
+                    <button
+                        onClick={handleRetry}
+                        className="mt-4 px-4 py-2 text-white bg-purple-600 
+                                 hover:bg-purple-700 rounded-md transition-colors"
+                    >
+                        Try again
+                    </button>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <div>
             {/* Search and actions bar */}
-            <div className="flex justify-between mb-6">
-                <SearchBar />
+            <PromptHeader />
 
-                <div className="flex gap-3">
-                    <div className="border border-purple-600 rounded text-purple-600 
-                        hover:border-gray-200 hover:text-gray-800">
-                        <BtnPrimary
-                            // onClick={toggleFavoritesFilter}
-                            iconLeft={<Star size={16} />}
-                            btnLegend="favorites" />
-                    </div>
-
-                    
-                    <div onClick={() => navigate('/dashboard/create-prompt')}
-                        className="bg-purple-200 rounded text-purple-600 hover:bg-purple-100">
-                        <BtnPrimary
-                            iconLeft={<Plus size={16} />}
-                            btnLegend="Create Prompt" />
-                    </div>
-                        
-                    
-                </div>
-            </div>
-            <hr className='border border-gray-200'/>
-
-            {/* Tags filter */}
-            <div className="my-6">
-                <div className="flex items-center mb-2">
-                    <h3 className="text-sm font-medium text-gray-700 mr-2 my-2">Filter by tags:</h3>
-                    
-                        <button
-                            // onClick={() => setShowTagModal(true)}
-                            className="text-sm text-purple-600 hover:text-purple-800"
-                        >
-                            {/* {canAddTagDirectly ? 'Add Tag' : 'Suggest Tag'} */}
-                        </button>
-                    
-                    
-                        <button
-                            // onClick={handleManageTags}
-                            className="ml-4 text-sm text-blue-600 hover:text-blue-800"
-                        >
-                            Manage All Tags
-                        </button>
-                    
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                    
-                    <button
-                        key={tag.id}
-                        onClick={() => handleTagSelect(tag.id)}
-                        className={`transition-all ${selectedTags.includes(tag.id) ? 'ring-2 ring-offset-1 ring-purple-500' : ''}`}
-                    >
-                        <TagComponent
-                            tagLegend={tag.name}
-                            bgColor={bgColors[index % bgColors.length]}
-                            textColor={textColors[index % textColors.length]}
-                        />
-                    </button>
-                    
-                </div>
-            </div>
-
+            <hr className='border border-gray-200 mb-6' />
             {/* Prompts grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.isArray(prompts) && prompts.length > 0 ?(
+                {prompts && prompts.length > 0 ? (
                     prompts.map(prompt => (
                         <PromptCard
                             key={prompt.id}
                             prompt={prompt}
-                            canEditPrompt={canEditPrompt}
-                            canDeletePrompt={canDeletePrompt}
+                            canEditPrompt={true} // TODO: Add proper permission check
+                            canDeletePrompt={true} // TODO: Add proper permission check
                         />
                     ))
                 ) : (
                     <div className="col-span-3 py-8 text-center text-gray-500">
-                        <p>No prompts match your current filters.</p>
+                        <p>No prompts available.</p>
+                        <button
+                            onClick={() => navigate('/dashboard/create-prompt')}
+                            className="mt-4 text-purple-600 hover:text-purple-800"
+                        >
+                            Create your first prompt
+                        </button>
                     </div>
                 )}
             </div>
-
-            {/* Tag suggestion modal */}
-            {showTagModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-96">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium">
-                                {/* {canAddTagDirectly ? 'Add New Tag' : 'Suggest New Tag'} */}
-                            </h3>
-                            <button onClick={() => setShowTagModal(false)} className="text-gray-500 hover:text-gray-700">
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        <div className="mb-4">
-                            <input
-                                type="text"
-                                value={newTag}
-                                onChange={(e) => setNewTag(e.target.value)}
-                                placeholder="Enter tag name"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                        </div>
-
-                        <div className="flex justify-end space-x-2">
-                            <button
-                                onClick={() => setShowTagModal(false)}
-                                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleAddTagSuggestion}
-                                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
-                            >
-                                {/* {canAddTagDirectly ? 'Add Tag' : 'Submit Suggestion'} */}
-                            </button>
-                        </div>
-
-                        {!canAddTagDirectly && (
-                            <p className="mt-4 text-xs text-gray-500">
-                                Tag suggestions require approval from a moderator before they appear in the tag list.
-                            </p>
-                        )}
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

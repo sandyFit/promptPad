@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from 'react';
+import { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
 import { apiClient } from '../utils/apiClient';
 import {
     reducer,
@@ -34,158 +34,51 @@ export const usePrompt = () => {
 
 export const PromptProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
-    const { allPrompts, prompt, loading, error } = state;
 
-    const createPrompt = async (promptData) => {
+    // Memoize getAllPrompts function
+    const getAllPrompts = useCallback(async () => {
+        if (state.loading) return;
+
         dispatch({ type: SET_LOADING, payload: true });
-
-        try {
-            const response = await apiClient.request(
-                'prompts',
-                'POST',
-                promptData
-            );
-            if (response.success) {
-                dispatch({ type: CREATE_PROMPT, payload: response.prompt });
-            }
-            return response;
-
-        } catch (error) {
-            dispatch({ type: SET_ERROR, payload: error.message });
-            throw error;
-
-        } finally {
-            dispatch({ type: SET_LOADING, payload: false });
-
-        }
-    };
-
-    const getAllPrompts = async (prompts) => {
-        dispatch({ type: SET_ALL_PROMPTS, payload: prompts });
-
         try {
             const response = await apiClient.request('prompts');
-            if (response.success) {
-                const prompts = Array.isArray(response) ? response : response.prompts || [];
-                dispatch({ typ: SET_ALL_PROMPTS, payload: response.prompts });
-            };
-            
-        } catch (error) {
-            dispatch({ type: SET_ERROR, payload: error.message });
-            throw error;
-            
-        } finally {
-            dispatch({ type: SET_LOADING, payload: false });
-        }
-    };
+            console.log('Full response received:', response);
 
-    const getPromptById = async (id) => {
-        dispatch({ type: SET_LOADING, payload: true });
-
-        try {
-            const response = await apiClient.request(`prompts/${id}`);
-            if (response.success) {
-                dispatch({ type: SET_PROMPT, payload: response.prompt });
-                return prompt;
+            // Updated check to match actual response structure
+            if (response && Array.isArray(response.prompts)) {
+                console.log('Prompts data:', response.prompts);
+                dispatch({
+                    type: SET_ALL_PROMPTS,
+                    payload: response.prompts
+                });
+                return response.prompts;
+            } else {
+                throw new Error('Invalid response format');
             }
-
-            
         } catch (error) {
-            dispatch({ type: SET_ERROR, payload: error.message });
+            console.error('Error fetching prompts:', error);
+            dispatch({
+                type: SET_ERROR,
+                payload: error.message || 'Failed to fetch prompts'
+            });
             throw error;
-            
         } finally {
             dispatch({ type: SET_LOADING, payload: false });
-            
         }
-    };
+    }, [state.loading]);
 
-    const updatePrompt = async (id, promptData) => {
-        dispatch({ type: SET_LOADING, payload: true });
 
-        try {
-            if (!id) {
-                throw new Error('Prompt ID is required');
-            }
 
-            const response = await apiClient.request(`prompts/${id}`, 'PUT', promptData);
-            if (response.success) {
-                dispatch({ type: UPDATE_PROMPT, payload: response.prompt });
-            }
-            return response;
-            
-        } catch (error) {
-            dispatch({ type: SET_ERROR, payload: error.message });
-            throw error;
-            
-        } finally {
-            dispatch({ type: SET_LOADING, payload: false });
-            
-        }
-    };
 
-    const deletePrompt = async (id) => {
-        dispatch({ type: SET_LOADING, payload: true });
-
-        try {
-            if (!id) {
-                throw new Error('Prompt ID is required');
-            };
-
-            const response = await apiClient.request(`prompts/${id}`, 'DELETE');
-            if (response.success) {
-                dispatch({ type: DELETE_PROMPT, payload: response.prompt });
-            }
-            return response;
-            
-        } catch (error) {
-            dispatch({ type: SET_ERROR, payload: error.message });
-            throw error;
-            
-        } finally {
-            dispatch({ type: SET_LOADING, payload: false });
-            
-        }
-    }; 
-
-    const approvePrompt = async (promptId) => { 
-        dispatch({ type: SET_LOADING, payload: true });
-
-        try {
-
-            const response = await apiClient.request(`prompts/${proomptId}`, 'PUT');
-            if (response.seccess) { 
-                dispatch({ type: APPROVE_PROMPT, payload: response.prompt });
-            };
-            return response;
-            
-        } catch (error) {
-            dispatch({ type: SET_ERROR, payload: error.message });
-            throw error;
-            
-        } finally {
-            dispatch({ type: SET_LOADING, payload: false });
-            
-        }
-    }
-
-    const value = {
-        allPrompts,
-        prompt,
-        loading,
-        error,
-        createPrompt,
-        getAllPrompts,
-        getPromptById,
-        updatePrompt,
-        deletePrompt,
-        approvePrompt
-    };
+    const value = useMemo(() => ({
+        ...state,
+        getAllPrompts
+    }), [state, getAllPrompts]);
 
     return (
         <PromptContext.Provider value={value}>
             {children}
         </PromptContext.Provider>
     );
-}
+};
 

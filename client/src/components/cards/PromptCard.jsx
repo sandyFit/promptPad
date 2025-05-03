@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Edit, Star, Trash2 } from 'lucide-react';
 
-
 const PromptCard = ({ prompt, canEditPrompt, canDeletePrompt }) => {
-    const [isFavorite, setIsFavorite] = useState(prompt.isFavorite || false);
+    const [isFavorite, setIsFavorite] = useState(prompt?.isFavorite || false);
+
+    if (!prompt) {
+        return null; // Or a placeholder card
+    }
 
     const toggleFavorite = () => {
         setIsFavorite(!isFavorite);
@@ -49,18 +52,18 @@ const PromptCard = ({ prompt, canEditPrompt, canDeletePrompt }) => {
                 {prompt.summary}
             </p>
 
-            <div className="flex justify-between items-center">
+            {/* <div className="flex justify-between items-center">
                 <div className="flex gap-2">
-                    {prompts.tags.map(tag => (
-                        <span key={tag} className="bg-gray-100 text-xs px-2 py-1 rounded text-gray-600">
-                            {tag}
+                    {prompt.tags?.map(tag => (
+                        <span
+                            key={tag.id || tag}
+                            className="bg-gray-100 text-xs px-2 py-1 rounded text-gray-600"
+                        >
+                            {tag.name || tag}
                         </span>
                     ))}
                 </div>
-                {/* <div className="text-xs text-gray-500">
-                    By {prompt.contributor.name}
-                </div> */}
-            </div>
+            </div> */}
         </article>
     );
 };
