@@ -67,13 +67,46 @@ export const PromptProvider = ({ children }) => {
         }
     }, [state.loading]);
 
+    const getPromptById = useCallback(async (id) => {
+        if (state.loading) return;
 
+        dispatch({ type: SET_LOADING, payload: true });
+        try {
+            const response = await apiClient.request(`prompts/${id}`);
+            console.log('Full response received:', response);
+
+            // The response is already the prompt object
+            if (response && response.id) {
+                console.log('Prompt data:', response);
+                dispatch({
+                    type: SET_PROMPT,
+                    payload: response
+                });
+                return response;
+            } else {
+                throw new Error('Prompt not found');
+            }
+        } catch (error) {
+            console.error('Error fetching prompt:', error);
+            dispatch({
+                type: SET_ERROR,
+                payload: error.message || 'Failed to fetch prompt'
+            });
+            throw error;
+        } finally {
+            dispatch({ type: SET_LOADING, payload: false });
+        }
+    }, [state.loading]);
 
 
     const value = useMemo(() => ({
         ...state,
-        getAllPrompts
-    }), [state, getAllPrompts]);
+        getAllPrompts,
+        getPromptById,
+    }), [state,
+        getAllPrompts,
+        getPromptById,
+    ]);
 
     return (
         <PromptContext.Provider value={value}>

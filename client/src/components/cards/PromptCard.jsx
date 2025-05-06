@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Edit, Star, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const PromptCard = ({ prompt, canEditPrompt, canDeletePrompt }) => {
     const [isFavorite, setIsFavorite] = useState(prompt?.isFavorite || false);
@@ -52,18 +53,13 @@ const PromptCard = ({ prompt, canEditPrompt, canDeletePrompt }) => {
                 {prompt.summary}
             </p>
 
-            {/* <div className="flex justify-between items-center">
-                <div className="flex gap-2">
-                    {prompt.tags?.map(tag => (
-                        <span
-                            key={tag.id || tag}
-                            className="bg-gray-100 text-xs px-2 py-1 rounded text-gray-600"
-                        >
-                            {tag.name || tag}
-                        </span>
-                    ))}
-                </div>
-            </div> */}
+            <div className="flex justify-end">
+                <Link to={`/dashboard/prompts/${prompt.id}`}
+                    className="flex text-sm text-purple-600 hover:text-purple-400 gap-2 mb-4 ">
+                        Read Prompt
+                </Link>
+            </div>
+          
         </article>
     );
 };

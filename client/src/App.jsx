@@ -16,6 +16,7 @@ import Tags from "./dashboard/Tags";
 import CreatePrompt from "./dashboard/CreatePrompt";
 import Landing from "./pages/Landing";
 import { Toaster } from "react-hot-toast";
+import PromptDetail from "./dashboard/PromptDetail";
 
 const App = () => {
     return (
@@ -33,6 +34,7 @@ const App = () => {
                             <Route index element={<Prompts />} />
 
                             {/* Dashboard sub-routes */}
+                            <Route path="prompts/:id" element={<PromptDetail />} />
                             <Route path="create" element={<CreatePrompt />} />
                             <Route path="users" element={<Users />} />
                             <Route path="favorites" element={<Favorites />} />
